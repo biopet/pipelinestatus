@@ -53,36 +53,38 @@ case class Deps(jobs: Map[String, Job], files: Array[JsObject]) extends Logging 
     }.distinct
   }
 
-  /** This publish the graph to a pim host */
-  def publishCompressedGraphToPim(host: String, runId: String)(
-      implicit ws: AhcWSClient): Future[WSResponse] = {
+  def makePimRun(runId: String): Run = {
     val links: List[Link] = this
       .compressOnType()
       .flatMap(x => x._2.map(y => Link("link", y, "output", x._1, "input", "test")))
       .toList
-    val run = Run(
+    Run(
       runId,
       Network("graph",
-              Nil,
-              this
-                .compressOnType()
-                .map(
-                  x =>
-                    Node(x._1,
-                         "root",
-                         List(Port("input", "input")),
-                         List(Port("output", "output")),
-                         "test"))
-                .toList,
-              links),
+        Nil,
+        this
+          .compressOnType()
+          .map(
+            x =>
+              Node(x._1,
+                "root",
+                List(Port("input", "input")),
+                List(Port("output", "output")),
+                "test"))
+          .toList,
+        links),
       "Biopet pipeline",
       "biopet"
     )
+  }
 
+  /** This publish the graph to a pim host */
+  def publishCompressedGraphToPim(host: String, runId: String)(
+      implicit ws: AhcWSClient): Future[WSResponse] = {
     val request = ws
       .url(s"$host/api/runs/")
       .withHeaders("Accept" -> "application/json", "Content-Type" -> "application/json")
-      .put(run.toString)
+      .put(makePimRun(runId).toString)
 
     request.onFailure { case e => logger.warn("Post workflow did fail", e) }
     request.onSuccess {
