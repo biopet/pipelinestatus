@@ -6,8 +6,9 @@ scalaVersion := "2.11.11"
 resolvers += Resolver.sonatypeRepo("snapshots")
 
 libraryDependencies += "com.github.biopet" %% "tool-utils" % "0.2-SNAPSHOT" changing()
+libraryDependencies += "com.typesafe.play" %% "play-ws" % "2.5.15"
 
-libraryDependencies += "com.github.biopet" %% "tool-test-utils" % "0.2-SNAPSHOT" % Test changing()
+libraryDependencies += "com.github.biopet" %% "tool-test-utils" % "0.1-SNAPSHOT" % Test changing()
 
 mainClass in assembly := Some("nl.biopet.tools.pipelinestatus.PipelineStatus")
 
