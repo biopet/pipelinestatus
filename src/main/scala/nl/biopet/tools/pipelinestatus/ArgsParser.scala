@@ -5,11 +5,13 @@ import java.io.File
 import nl.biopet.utils.tool.AbstractOptParser
 
 class ArgsParser(cmdName: String) extends AbstractOptParser[Args](cmdName) {
-  opt[File]('d', "pipelineDir") required () maxOccurs 1 valueName "<file>" action { (x, c) =>
-    c.copy(pipelineDir = x)
+  opt[File]('d', "pipelineDir") required () maxOccurs 1 valueName "<file>" action {
+    (x, c) =>
+      c.copy(pipelineDir = x)
   } text "Output directory of the pipeline"
-  opt[File]('o', "outputDir") required () maxOccurs 1 valueName "<file>" action { (x, c) =>
-    c.copy(outputDir = x)
+  opt[File]('o', "outputDir") required () maxOccurs 1 valueName "<file>" action {
+    (x, c) =>
+      c.copy(outputDir = x)
   } text "Output directory of this tool"
   opt[File]("depsFile") maxOccurs 1 valueName "<file>" action { (x, c) =>
     c.copy(depsFile = Some(x))

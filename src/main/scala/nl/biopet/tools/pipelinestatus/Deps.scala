@@ -17,7 +17,8 @@ import scala.io.Source
   *
   * Created by pjvanthof on 24/06/2017.
   */
-case class Deps(jobs: Map[String, Job], files: Array[JsObject]) extends Logging {
+case class Deps(jobs: Map[String, Job], files: Array[JsObject])
+    extends Logging {
 
   /**
     * This method will compress the graph by combining all common job names
@@ -26,7 +27,9 @@ case class Deps(jobs: Map[String, Job], files: Array[JsObject]) extends Logging 
     */
   def compressOnType(main: Boolean = false): Map[String, List[String]] = {
     (for ((_, job) <- jobs.toSet if !main || job.mainJob) yield {
-      job.name -> (if (main) getMainDependencies(job.name).map(Job.compressedName(_)._1)
+      job.name -> (if (main)
+                     getMainDependencies(job.name).map(
+                       Job.compressedName(_)._1)
                    else job.dependsOnJobs.map(Job.compressedName(_)._1))
     }).groupBy(x => Job.compressedName(x._1)._1)
       .map(x => x._1 -> x._2.flatMap(_._2).toList.distinct)
@@ -56,23 +59,24 @@ case class Deps(jobs: Map[String, Job], files: Array[JsObject]) extends Logging 
   def makePimRun(runId: String): Run = {
     val links: List[Link] = this
       .compressOnType()
-      .flatMap(x => x._2.map(y => Link("link", y, "output", x._1, "input", "test")))
+      .flatMap(x =>
+        x._2.map(y => Link("link", y, "output", x._1, "input", "test")))
       .toList
     Run(
       runId,
       Network("graph",
-        Nil,
-        this
-          .compressOnType()
-          .map(
-            x =>
-              Node(x._1,
-                "root",
-                List(Port("input", "input")),
-                List(Port("output", "output")),
-                "test"))
-          .toList,
-        links),
+              Nil,
+              this
+                .compressOnType()
+                .map(
+                  x =>
+                    Node(x._1,
+                         "root",
+                         List(Port("input", "input")),
+                         List(Port("output", "output")),
+                         "test"))
+                .toList,
+              links),
       "Biopet pipeline",
       "biopet"
     )
@@ -81,10 +85,12 @@ case class Deps(jobs: Map[String, Job], files: Array[JsObject]) extends Logging 
   /** This publish the graph to a pim host */
   def publishCompressedGraphToPim(host: String, runId: String)(
       implicit ws: AhcWSClient): Future[WSResponse] = {
+    val pimRun = makePimRun(runId)
     val request = ws
       .url(s"$host/api/runs/")
-      .withHeaders("Accept" -> "application/json", "Content-Type" -> "application/json")
-      .put(makePimRun(runId).toString)
+      .withHeaders("Accept" -> "application/json",
+                   "Content-Type" -> "application/json")
+      .put(pimRun.toString)
 
     request.onFailure { case e => logger.warn("Post workflow did fail", e) }
     request.onSuccess {
@@ -102,7 +108,10 @@ object Deps {
   def readDepsFile(depsFile: File): Deps = {
     val deps = Json.parse(Source.fromFile(depsFile).mkString)
 
-    val jobs = (deps \ "jobs").as[JsObject].value.map(x => x._1 -> new Job(x._1, x._2.as[JsObject]))
+    val jobs = (deps \ "jobs")
+      .as[JsObject]
+      .value
+      .map(x => x._1 -> new Job(x._1, x._2.as[JsObject]))
 
     val files = (deps \ "files").as[JsArray]
 

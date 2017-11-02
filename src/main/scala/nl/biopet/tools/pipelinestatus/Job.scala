@@ -19,25 +19,31 @@ class Job(val name: String, map: JsObject) {
   def doneAtStart: Boolean = (map \ "done_at_start").get.as[Boolean]
 
   /** If one of this files exist the job is marked as failed */
-  def failFiles: List[File] = (map \ "fail_files").get.as[List[String]].map(new File(_))
+  def failFiles: List[File] =
+    (map \ "fail_files").get.as[List[String]].map(new File(_))
 
   /** If all of this files exist the job is marked as done */
-  def doneFiles: List[File] = (map \ "done_files").get.as[List[String]].map(new File(_))
+  def doneFiles: List[File] =
+    (map \ "done_files").get.as[List[String]].map(new File(_))
 
   /** Returns a list of jobs that depends on this job */
-  def outputUsedByJobs: List[String] = (map \ "output_used_by_jobs").get.as[List[String]]
+  def outputUsedByJobs: List[String] =
+    (map \ "output_used_by_jobs").get.as[List[String]]
 
   /** Returns a list of job where this job depends on */
-  def dependsOnJobs: List[String] = (map \ "depends_on_jobs").get.as[List[String]]
+  def dependsOnJobs: List[String] =
+    (map \ "depends_on_jobs").get.as[List[String]]
 
   /** Location of the stdout file of this job */
   def stdoutFile = new File((map \ "stdout_file").as[String])
 
   /** All output files of this job */
-  def outputsFiles: List[File] = (map \ "outputs").get.as[List[String]].map(new File(_))
+  def outputsFiles: List[File] =
+    (map \ "outputs").get.as[List[String]].map(new File(_))
 
   /** All input files of this job */
-  def inputFiles: List[File] = (map \ "inputs").get.as[List[String]].map(new File(_))
+  def inputFiles: List[File] =
+    (map \ "inputs").get.as[List[String]].map(new File(_))
 
   /** When true this job is marked as a main job in the graph */
   def mainJob: Boolean = (map \ "main_job").get.as[Boolean]
