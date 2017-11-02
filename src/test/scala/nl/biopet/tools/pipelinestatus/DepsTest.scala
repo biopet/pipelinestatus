@@ -3,7 +3,6 @@ package nl.biopet.tools.pipelinestatus
 import java.io.File
 
 import nl.biopet.test.BiopetTest
-import nl.biopet.tools.pipelinestatus.pim.Run
 import org.testng.annotations.Test
 
 class DepsTest extends BiopetTest {
