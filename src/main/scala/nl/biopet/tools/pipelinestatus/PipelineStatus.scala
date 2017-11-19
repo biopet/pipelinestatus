@@ -390,4 +390,10 @@ object PipelineStatus extends ToolCommand[Args] {
       .filter(_._2)
       .keySet ++ alreadyFailed
   }
+
+  def descriptionText = "This tool keeps track of status of job from a biopet pipeline"
+
+  def manualText = ""
+
+  def exampleText = ""
 }
