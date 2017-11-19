@@ -49,7 +49,7 @@ object PipelineStatus extends ToolCommand[Args] {
       logger.info(
         s"Status will be pushed to ${cmdArgs.pimHost.get}/run/${pimRunId.get}")
       Await.result(
-        deps.publishCompressedGraphToPim(cmdArgs.pimHost.get, pimRunId.get),
+        deps.publishCompressedGraphToPim(cmdArgs.pimHost.get, pimRunId.get, cmdArgs.pimDeleteIfExist),
         Duration.Inf)
     }
 
@@ -158,12 +158,12 @@ object PipelineStatus extends ToolCommand[Args] {
 
     futures.foreach(x => Await.result(x, Duration.Inf))
 
-    val putStatuses = pimHost.map { host =>
+    pimHost.foreach { host =>
       val runId = pimRunId.getOrElse(
         throw new IllegalStateException(
           "Pim requires a run id, please supply this with --pimRunId"))
 
-      val futures = (for (job <- deps.jobs) yield {
+      val changes = (for (job <- deps.jobs) yield {
         val status = job._1 match {
           case n if jobsStart.contains(n) => JobStatus.running
           case n if jobFailed.contains(n) => JobStatus.failed
@@ -171,34 +171,36 @@ object PipelineStatus extends ToolCommand[Args] {
           case _ => JobStatus.idle
         }
 
-        if (!pimStatus.get(job._1).contains(status)) {
-          Thread.sleep(20)
-          Some(
-            ws.url(s"$host/api/runs/test/jobs/" + job._1)
-              .withHeaders("Accept" -> "application/json",
-                           "Content-Type" -> "application/json")
-              .put(
-                PimJob(job._1,
-                       Job.compressedName(job._1)._1,
-                       runId,
-                       "none",
-                       status).toString)
-              .map(job._1 -> (_, status)))
-        } else None
+        if (!pimStatus.get(job._1).contains(status)) Some((job, status)) else None
       }).flatten
-      if (logger.isDebugEnabled) futures.foreach(_.onComplete(logger.debug(_)))
-      futures.foreach { f =>
-        f.onFailure { case e => logger.warn("Post job did fail", e) }
-        f.onSuccess {
-          case r if r._2._1.status == 200 => logger.debug(r)
-          case r => logger.warn("Post job did fail: " + r)
+
+      def statusToId(jobStatus: JobStatus.Value): Int = {
+        jobStatus match {
+          case JobStatus.idle => 0
+          case JobStatus.running => 1
+          case JobStatus.success => 2
+          case JobStatus.failed => 3
         }
       }
-      Await.ready(Future.sequence(futures), Duration.Inf)
-      futures
-        .flatMap(_.value.flatMap(_.toOption))
-        .map(x => x._1 -> x._2._2)
-        .toMap
+
+      val future = if (changes.nonEmpty) {
+        val payload = changes.map(job => PimJob(name = job._1._1,
+          node = "root/" + job._1._2.compressedName._1,
+          status = statusToId(job._2)).toString).mkString("[",",","]")
+        val request = ws.url(s"$host/api/runs/$runId/jobs")
+          .withHeaders("Accept" -> "application/json",
+            "Content-Type" -> "application/json")
+          .put(payload)
+          .map { r =>
+            if (r.status == 200) logger.debug(r)
+            else logger.warn(s"Put jobs did fail. Request: $r  Body: ${r.body}  payload: $payload")
+            r
+          }
+        Some(request)
+      } else None
+
+      if (logger.isDebugEnabled) futures.foreach(_.onComplete(logger.debug(_)))
+      future.foreach(Await.result(_, Duration.Inf))
     }
     logger.info(
       s"Total job: $totalJobs, Pending: $totalPending, Ready to run / running: $totalStart, Done: $totalDone, Failed $totalFailed")
@@ -215,7 +217,7 @@ object PipelineStatus extends ToolCommand[Args] {
                           compressPlots,
                           pimHost,
                           pimRunId,
-                          pimStatus ++ putStatuses.getOrElse(Map()))
+                          pimStatus)
     }
   }
 

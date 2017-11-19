@@ -1,7 +1,7 @@
 package nl.biopet.tools.pipelinestatus.pim
 
 import nl.biopet.utils.conversions
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json._
 
 /**
   * Created by pjvanthof on 17/03/2017.
@@ -9,99 +9,121 @@ import play.api.libs.json.{JsObject, Json}
 trait PimClasses {
   def toMap: Map[String, Any]
 
-  def toJson: JsObject = conversions.mapToJson(toMap)
+  def toJson: JsObject = {
+    conversions.mapToJson(toMap.filter{
+      case (_, None) => false
+      case _ => true
+    }.map {
+      case (key, value: PimClasses) => key -> value.toJson
+      case (key, value: Array[PimClasses]) => key -> value.map(_.toJson)
+      case (key, value) => key -> value
+    })
+  }
 
   override def toString: String = Json.stringify(toJson)
 }
 
-case class Run(id: String,
-               network: Network,
-               description: String,
-               workflowEngine: String,
-               collapse: Boolean = false)
-    extends PimClasses {
-  def toMap = Map(
-    "id" -> id,
-    "network" -> network.toMap,
+case class Run(name: String,
+               title: Option[String] = None,
+               description: Option[String] = None,
+               user: String,
+               root: Node,
+               links: Array[Link] = Array(),
+               statusTypes: Array[StatusType] = Array(),
+               assignedTo: Array[String] = Array(),
+               customData: Map[String, Any] = Map()) extends PimClasses {
+  def toMap: Map[String, Any] = Map(
+    "name" -> name,
+    "title" -> title,
     "description" -> description,
-    "workflow_engine" -> workflowEngine,
-    "collapse" -> collapse
+    "user" -> user,
+    "root" -> root,
+    "links" -> links,
+    "statusTypes" -> statusTypes,
+    "assignedTo" -> assignedTo,
+    "customData" -> customData
   )
 }
 
-case class Network(description: String,
-                   groups: List[Group],
-                   nodes: List[Node],
-                   links: List[Link])
-    extends PimClasses {
-  def toMap = Map(
-    "description" -> description,
-    "groups" -> groups.map(_.toMap),
-    "nodes" -> nodes.map(_.toMap),
-    "links" -> links.map(_.toMap)
-  )
-}
-
-case class Group(description: String, id: String, parentGroup: String)
-    extends PimClasses {
-  def toMap = Map(
-    "id" -> id,
-    "description" -> description,
-    "parent_group" -> parentGroup
-  )
-}
-case class Node(id: String,
-                groupId: String,
-                inPorts: List[Port],
-                outPorts: List[Port],
-                nodeType: String)
-    extends PimClasses {
-  def toMap = Map(
-    "id" -> id,
-    "group_id" -> groupId,
-    "in_ports" -> inPorts.map(_.toMap),
-    "out_ports" -> outPorts.map(_.toMap),
-    "type" -> nodeType
-  )
-}
-case class Link(id: String,
-                fromNode: String,
-                fromPort: String,
-                toNode: String,
+case class Link(fromPort: String,
                 toPort: String,
-                linkType: String)
-    extends PimClasses {
-  def toMap = Map(
-    "id" -> id,
-    "from_node" -> fromNode,
-    "from_port" -> fromPort,
-    "to_node" -> toNode,
-    "to_port" -> toPort,
-    "type" -> linkType
-  )
-}
-case class Port(id: String, description: String) extends PimClasses {
-  def toMap = Map(
-    "id" -> id,
-    "description" -> description
+                description: Option[String] = None,
+                linkType: Option[String] = None,
+                title: Option[String] = None,
+                customData: Map[String, Any] = Map()) extends PimClasses {
+  def toMap: Map[String, Any] = Map(
+    "fromPort" -> fromPort,
+    "toPort" -> toPort,
+    "type" -> linkType,
+    "title" -> title,
+    "description" -> description,
+    "customData" -> customData
   )
 }
 
-case class Job(id: String,
-               nodeId: String,
-               runId: String,
-               sampleId: String,
-               status: JobStatus.Value)
-    extends PimClasses {
-  def toMap = Map(
-    "id" -> id,
-    "node_id" -> nodeId,
-    "run_id" -> runId,
-    "sample_id" -> sampleId,
-    "status" -> status.toString
+case class Node(name: String,
+                description: Option[String] = None,
+                title: Option[String] = None,
+                inPorts: Array[Port] = Array(),
+                outPorts: Array[Port] = Array(),
+                nodeType: Option[String] = None,
+                children: Array[Node] = Array(),
+                customData: Map[String, Any] = Map()) extends PimClasses {
+  def toMap: Map[String, Any] = Map(
+    "name" -> name,
+    "title" -> title,
+    "description" -> description,
+    "inPorts" -> inPorts,
+    "outPorts" -> outPorts,
+    "type" -> nodeType,
+    "children" -> children,
+    "customData" -> customData
   )
 }
+
+case class StatusType(description: Option[String] = None,
+                      title: Option[String] = None,
+                      color: Option[String] = None) extends PimClasses {
+  def toMap: Map[String, Any] = Map(
+    "title" -> title,
+    "description" -> description,
+    "color" -> color
+  )
+}
+
+case class Port(name: String,
+                description: Option[String] = None,
+                title: Option[String] = None,
+                customData: Map[String, Any] = Map()) extends PimClasses {
+  def toMap: Map[String, Any] = Map(
+    "name" -> name,
+    "title" -> title,
+    "description" -> description,
+    "customData" -> customData
+  )
+}
+
+case class Job(name: String,
+               description: Option[String] = None,
+               title: Option[String] = None,
+               node: String,
+               status: Int,
+               customData: Map[String, Any] = Map()) extends PimClasses {
+  def toMap: Map[String, Any] = Map(
+    "name" -> name,
+    "title" -> title,
+    "description" -> description,
+    "node" -> node,
+    "status" -> status,
+    "customData" -> customData
+  )
+}
+
 
 object JobStatus extends Enumeration {
-  val idle, running, success, failed = Value
+  val idle  = Value
+  val running = Value
+  val success = Value
+  val failed = Value
 }
+
