@@ -11,4 +11,5 @@ case class Args(pipelineDir: File = null,
                 compressPlots: Boolean = true,
                 pimHost: Option[String] = None,
                 pimRunId: Option[String] = None,
-                pimDeleteIfExist: Boolean = false)
+                pimDeleteIfExist: Boolean = false,
+                pimCompress: Boolean = false)

@@ -48,8 +48,11 @@ object PipelineStatus extends ToolCommand[Args] {
               "Could not auto-generate Pim run ID, please supply --pimRunId")
       logger.info(
         s"Status will be pushed to ${cmdArgs.pimHost.get}/run/${pimRunId.get}")
-      Await.result(
+      if (cmdArgs.pimCompress) Await.result(
         deps.publishCompressedGraphToPim(cmdArgs.pimHost.get, pimRunId.get, cmdArgs.pimDeleteIfExist),
+        Duration.Inf)
+      else Await.result(
+        deps.publishGraphToPim(cmdArgs.pimHost.get, pimRunId.get, cmdArgs.pimDeleteIfExist),
         Duration.Inf)
     }
 
@@ -61,7 +64,8 @@ object PipelineStatus extends ToolCommand[Args] {
       plots = cmdArgs.complatePlots,
       compressPlots = cmdArgs.compressPlots,
       pimHost = cmdArgs.pimHost,
-      pimRunId = pimRunId
+      pimRunId = pimRunId,
+      pimCompress = cmdArgs.pimCompress
     )
 
     ws.close()
@@ -91,6 +95,7 @@ object PipelineStatus extends ToolCommand[Args] {
                           compressPlots: Boolean = true,
                           pimHost: Option[String] = None,
                           pimRunId: Option[String] = None,
+                          pimCompress: Boolean = false,
                           pimStatus: Map[String, JobStatus.Value] = Map())(
       implicit ws: AhcWSClient): Unit = {
 
@@ -184,9 +189,15 @@ object PipelineStatus extends ToolCommand[Args] {
       }
 
       val future = if (changes.nonEmpty) {
-        val payload = changes.map(job => PimJob(name = job._1._1,
-          node = "root/" + job._1._2.compressedName._1,
-          status = statusToId(job._2)).toString).mkString("[",",","]")
+        val payload = if (pimCompress){
+          changes.map(job => PimJob(name = job._1._1,
+            node = "root/" + job._1._2.compressedName._1,
+            status = statusToId(job._2)).toString).mkString("[",",","]")
+        } else {
+          changes.map(job => PimJob(name = job._1._1,
+            node = "root" + job._1._2.configPath.mkString("/","/","/") + job._1._1,
+            status = statusToId(job._2)).toString).mkString("[",",","]")
+        }
         val request = ws.url(s"$host/api/runs/$runId/jobs")
           .withHeaders("Accept" -> "application/json",
             "Content-Type" -> "application/json")
@@ -217,6 +228,7 @@ object PipelineStatus extends ToolCommand[Args] {
                           compressPlots,
                           pimHost,
                           pimRunId,
+                          pimCompress,
                           pimStatus)
     }
   }
