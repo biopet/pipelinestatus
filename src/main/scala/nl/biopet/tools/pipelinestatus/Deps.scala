@@ -9,9 +9,8 @@ import play.api.libs.ws.WSResponse
 import play.api.libs.ws.ahc.AhcWSClient
 import nl.biopet.tools.pipelinestatus.pim.{Job => PimJob}
 
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.Duration
 import scala.io.Source
 
 /**

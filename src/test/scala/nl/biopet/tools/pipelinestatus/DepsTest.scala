@@ -7,7 +7,7 @@ import org.testng.annotations.Test
 
 class DepsTest extends BiopetTest {
   @Test
-  def test(): Unit = {
+  def testReading(): Unit = {
     val deps = Deps.readDepsFile(resourceFile("/deps.json"))
 
     val job1 = deps.jobs("job_1")
@@ -23,6 +23,7 @@ class DepsTest extends BiopetTest {
     job1.mainJob shouldBe true
     job1.intermediate shouldBe false
     job1.compressedName shouldBe ("job", 1)
+    job1.configPath shouldBe Nil
 
     val job2 = deps.jobs("job_2")
     job2.name shouldBe "job_2"
@@ -37,6 +38,7 @@ class DepsTest extends BiopetTest {
     job2.mainJob shouldBe false
     job2.intermediate shouldBe true
     job2.compressedName shouldBe ("job", 2)
+    job2.configPath shouldBe Nil
 
     val job3 = deps.jobs("jobX_3")
     job3.name shouldBe "jobX_3"
@@ -51,6 +53,7 @@ class DepsTest extends BiopetTest {
     job3.mainJob shouldBe true
     job3.intermediate shouldBe false
     job3.compressedName shouldBe ("jobX", 3)
+    job3.configPath shouldBe Nil
 
     val compress = deps.compressOnType()
     compress.keySet shouldBe Set("job", "jobX")
@@ -63,5 +66,19 @@ class DepsTest extends BiopetTest {
     compressMain("jobX") shouldBe List("job")
 
     deps.getMainDeps shouldBe Map("job_1" -> List(), "jobX_3" -> List("job_1"))
+  }
+
+  @Test
+  def testConfigPath(): Unit = {
+    val deps = Deps.readDepsFile(resourceFile("/deps.with_config_path.json"))
+
+    val job1 = deps.jobs("job_1")
+    job1.configPath shouldBe List("rootPipeline")
+
+    val job2 = deps.jobs("job_2")
+    job2.configPath shouldBe List("rootPipeline", "subPipeline")
+
+    val job3 = deps.jobs("jobX_3")
+    job3.configPath shouldBe List("rootPipeline", "subPipeline")
   }
 }
