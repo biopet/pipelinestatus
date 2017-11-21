@@ -405,9 +405,27 @@ object PipelineStatus extends ToolCommand[Args] {
       .keySet ++ alreadyFailed
   }
 
-  def descriptionText = "This tool keeps track of status of job from a biopet pipeline"
+  def descriptionText: String = """
+                          | This tool keeps track of the status of a biopet pipeline.
+                          |
+                          | It also possible to push the status. For this is PIM host should be provided
+                        """.stripMargin
 
-  def manualText = ""
+  def manualText: String =
+    """
+      | Default this tool will create the output just once. To do this continuously the -f argument should be given.
+      |
+      | This tool has also support for [PIM](https://git.lumc.nl/tkroes/pim), see examples for this.
+    """.stripMargin
 
-  def exampleText = ""
+  def exampleText: String = """
+                      | This will generate a default status check and trying to auto detect the graph:
+                      | ```java -jar <tool_jar> -d <pipeline_dir> -o <output_dir>```
+                      |
+                      | This will follow the pipeline and update the results each interval:
+                      | ```java -jar <tool_jar> -d <pipeline_dir> -o <output_dir> -f```
+                      |
+                      | To push to PIM this should be added:
+                      | ```java -jar <tool_jar> -d <pipeline_dir> -o <output_dir> -f -pimHost <pim_url>```
+                    """.stripMargin
 }
