@@ -48,12 +48,17 @@ object PipelineStatus extends ToolCommand[Args] {
               "Could not auto-generate Pim run ID, please supply --pimRunId")
       logger.info(
         s"Status will be pushed to ${cmdArgs.pimHost.get}/run/${pimRunId.get}")
-      if (cmdArgs.pimCompress) Await.result(
-        deps.publishCompressedGraphToPim(cmdArgs.pimHost.get, pimRunId.get, cmdArgs.pimDeleteIfExist),
-        Duration.Inf)
-      else Await.result(
-        deps.publishGraphToPim(cmdArgs.pimHost.get, pimRunId.get, cmdArgs.pimDeleteIfExist),
-        Duration.Inf)
+      if (cmdArgs.pimCompress)
+        Await.result(
+          deps.publishCompressedGraphToPim(cmdArgs.pimHost.get,
+                                           pimRunId.get,
+                                           cmdArgs.pimDeleteIfExist),
+          Duration.Inf)
+      else
+        Await.result(deps.publishGraphToPim(cmdArgs.pimHost.get,
+                                            pimRunId.get,
+                                            cmdArgs.pimDeleteIfExist),
+                     Duration.Inf)
     }
 
     writePipelineStatus(
@@ -176,7 +181,8 @@ object PipelineStatus extends ToolCommand[Args] {
           case _ => JobStatus.idle
         }
 
-        if (!pimStatus.get(job._1).contains(status)) Some((job, status)) else None
+        if (!pimStatus.get(job._1).contains(status)) Some((job, status))
+        else None
       }).flatten
 
       def statusToId(jobStatus: JobStatus.Value): Int = {
@@ -189,24 +195,45 @@ object PipelineStatus extends ToolCommand[Args] {
       }
 
       val future = if (changes.nonEmpty) {
-        val payload = if (pimCompress){
-          changes.map(job => PimJob(name = job._1._1,
-            node = if (job._1._2.configPath.nonEmpty)
-              "root" + job._1._2.configPath.mkString("/","/","/") + job._1._2.compressedName._1 else "root/" + job._1._2.compressedName._1,
-            status = statusToId(job._2)).toString).mkString("[",",","]")
+        val payload = if (pimCompress) {
+          changes
+            .map(
+              job =>
+                PimJob(
+                  name = job._1._1,
+                  node =
+                    if (job._1._2.configPath.nonEmpty)
+                      "root" + job._1._2.configPath
+                        .mkString("/", "/", "/") + job._1._2.compressedName._1
+                    else "root/" + job._1._2.compressedName._1,
+                  status = statusToId(job._2)
+                ).toString)
+            .mkString("[", ",", "]")
         } else {
-          changes.map(job => PimJob(name = job._1._1,
-            node = if (job._1._2.configPath.nonEmpty)
-              "root" + job._1._2.configPath.mkString("/","/","/") + job._1._1 else "root/" + job._1._1,
-            status = statusToId(job._2)).toString).mkString("[",",","]")
+          changes
+            .map(
+              job =>
+                PimJob(
+                  name = job._1._1,
+                  node =
+                    if (job._1._2.configPath.nonEmpty)
+                      "root" + job._1._2.configPath
+                        .mkString("/", "/", "/") + job._1._1
+                    else "root/" + job._1._1,
+                  status = statusToId(job._2)
+                ).toString)
+            .mkString("[", ",", "]")
         }
-        val request = ws.url(s"$host/api/runs/$runId/jobs")
+        val request = ws
+          .url(s"$host/api/runs/$runId/jobs")
           .withHeaders("Accept" -> "application/json",
-            "Content-Type" -> "application/json")
+                       "Content-Type" -> "application/json")
           .put(payload)
           .map { r =>
             if (r.status == 200) logger.debug(r)
-            else logger.warn(s"Put jobs did fail. Request: $r  Body: ${r.body}  payload: $payload")
+            else
+              logger.warn(
+                s"Put jobs did fail. Request: $r  Body: ${r.body}  payload: $payload")
             r
           }
         Some(request)
@@ -405,7 +432,8 @@ object PipelineStatus extends ToolCommand[Args] {
       .keySet ++ alreadyFailed
   }
 
-  def descriptionText: String = """
+  def descriptionText: String =
+    """
                           | This tool keeps track of the status of a biopet pipeline.
                           |
                           | It also possible to push the status. For this is PIM host should be provided
@@ -418,7 +446,8 @@ object PipelineStatus extends ToolCommand[Args] {
       | This tool has also support for [PIM](https://git.lumc.nl/tkroes/pim), see examples for this.
     """.stripMargin
 
-  def exampleText: String = """
+  def exampleText: String =
+    """
                       | This will generate a default status check and trying to auto detect the graph:
                       | ```java -jar <tool_jar> -d <pipeline_dir> -o <output_dir>```
                       |

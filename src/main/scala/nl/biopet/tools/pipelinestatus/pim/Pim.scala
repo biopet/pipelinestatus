@@ -10,14 +10,17 @@ trait PimClasses {
   def toMap: Map[String, Any]
 
   def toJson: JsObject = {
-    conversions.mapToJson(toMap.filter{
-      case (_, None) => false
-      case _ => true
-    }.map {
-      case (key, value: PimClasses) => key -> value.toJson
-      case (key, value: Array[PimClasses]) => key -> value.map(_.toJson)
-      case (key, value) => key -> value
-    })
+    conversions.mapToJson(
+      toMap
+        .filter {
+          case (_, None) => false
+          case _ => true
+        }
+        .map {
+          case (key, value: PimClasses) => key -> value.toJson
+          case (key, value: Array[PimClasses]) => key -> value.map(_.toJson)
+          case (key, value) => key -> value
+        })
   }
 
   override def toString: String = Json.stringify(toJson)
@@ -31,7 +34,8 @@ case class Run(name: String,
                links: Array[Link] = Array(),
                statusTypes: Array[StatusType] = Array(),
                assignedTo: Array[String] = Array(),
-               customData: Map[String, Any] = Map()) extends PimClasses {
+               customData: Map[String, Any] = Map())
+    extends PimClasses {
   def toMap: Map[String, Any] = Map(
     "name" -> name,
     "title" -> title,
@@ -50,7 +54,8 @@ case class Link(fromPort: String,
                 description: Option[String] = None,
                 linkType: Option[String] = None,
                 title: Option[String] = None,
-                customData: Map[String, Any] = Map()) extends PimClasses {
+                customData: Map[String, Any] = Map())
+    extends PimClasses {
   def toMap: Map[String, Any] = Map(
     "fromPort" -> fromPort,
     "toPort" -> toPort,
@@ -68,7 +73,8 @@ case class Node(name: String,
                 outPorts: Array[Port] = Array(),
                 nodeType: Option[String] = None,
                 children: Array[Node] = Array(),
-                customData: Map[String, Any] = Map()) extends PimClasses {
+                customData: Map[String, Any] = Map())
+    extends PimClasses {
   def toMap: Map[String, Any] = Map(
     "name" -> name,
     "title" -> title,
@@ -83,7 +89,8 @@ case class Node(name: String,
 
 case class StatusType(description: Option[String] = None,
                       title: Option[String] = None,
-                      color: Option[String] = None) extends PimClasses {
+                      color: Option[String] = None)
+    extends PimClasses {
   def toMap: Map[String, Any] = Map(
     "title" -> title,
     "description" -> description,
@@ -94,7 +101,8 @@ case class StatusType(description: Option[String] = None,
 case class Port(name: String,
                 description: Option[String] = None,
                 title: Option[String] = None,
-                customData: Map[String, Any] = Map()) extends PimClasses {
+                customData: Map[String, Any] = Map())
+    extends PimClasses {
   def toMap: Map[String, Any] = Map(
     "name" -> name,
     "title" -> title,
@@ -108,7 +116,8 @@ case class Job(name: String,
                title: Option[String] = None,
                node: String,
                status: Int,
-               customData: Map[String, Any] = Map()) extends PimClasses {
+               customData: Map[String, Any] = Map())
+    extends PimClasses {
   def toMap: Map[String, Any] = Map(
     "name" -> name,
     "title" -> title,
@@ -119,11 +128,9 @@ case class Job(name: String,
   )
 }
 
-
 object JobStatus extends Enumeration {
-  val idle  = Value
+  val idle = Value
   val running = Value
   val success = Value
   val failed = Value
 }
-
