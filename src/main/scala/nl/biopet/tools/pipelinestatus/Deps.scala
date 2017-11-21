@@ -62,8 +62,10 @@ case class Deps(jobs: Map[String, Job], files: Array[JsObject])
       .jobs.flatMap(x => x._2.dependsOnJobs.map(y => (x._1, y)))
       .map(x =>
         Link(
-          fromPort = "root" + jobs(x._2).configPath.mkString("/", "/", "/") + x._2 + "/output",
-          toPort = "root" + jobs(x._1).configPath.mkString("/", "/", "/") + x._1 + "/input"))
+          fromPort = if (jobs(x._2).configPath.nonEmpty)
+            "root" + jobs(x._2).configPath.mkString("/", "/", "/") + x._2 + "/output" else "root/" + x._2 + "/output",
+          toPort = if  (jobs(x._1).configPath.nonEmpty)
+            "root" + jobs(x._1).configPath.mkString("/", "/", "/") + x._1 + "/input" else "root/" + x._1 + "/input"))
       .toArray
 
     def jobsToNode(jobs: List[Job], depth: Int = 0): Array[Node] = {
@@ -89,7 +91,8 @@ case class Deps(jobs: Map[String, Job], files: Array[JsObject])
     publishRunToPim(makePimRun(runId), host, deleteIfExist).flatMap { r =>
       if (r.status != 200) throw new IllegalStateException(s"Post workflow did fail. Request: $r  Body: ${r.body}")
       val payload = jobs.map(job => PimJob(name = job._1, title = Some(job._1), description = Some(job._1),
-        node = "root" + job._2.configPath.mkString("/","/","/") + job._1,
+        node = if (job._2.configPath.nonEmpty)
+          "root" + job._2.configPath.mkString("/","/","/") + job._1 else "root/" + job._1,
         status = 0).toString).mkString("[", ",", "]")
       ws.url(s"$host/api/runs/$runId/jobs")
         .withHeaders("Accept" -> "application/json",

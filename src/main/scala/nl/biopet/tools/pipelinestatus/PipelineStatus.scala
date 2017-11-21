@@ -195,7 +195,8 @@ object PipelineStatus extends ToolCommand[Args] {
             status = statusToId(job._2)).toString).mkString("[",",","]")
         } else {
           changes.map(job => PimJob(name = job._1._1,
-            node = "root" + job._1._2.configPath.mkString("/","/","/") + job._1._1,
+            node = if (job._1._2.configPath.nonEmpty)
+              "root" + job._1._2.configPath.mkString("/","/","/") + job._1._1 else "root/" + job._1._1,
             status = statusToId(job._2)).toString).mkString("[",",","]")
         }
         val request = ws.url(s"$host/api/runs/$runId/jobs")
