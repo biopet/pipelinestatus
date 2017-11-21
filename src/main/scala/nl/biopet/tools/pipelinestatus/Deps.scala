@@ -107,29 +107,32 @@ case class Deps(jobs: Map[String, Job], files: Array[JsObject])
   }
 
   def makeCompressedPimRun(runId: String): Run = {
-    val links: List[Link] = this
-      .compressOnType()
-      .flatMap(x =>
-        x._2.map(y => Link(fromPort = "root/" + y + "/output", toPort = "root/" + x._1 + "/input")))
-      .toList
+    def links: Array[Link] = this
+      .jobs.flatMap(x => x._2.dependsOnJobs.map(y => (x._1, y)))
+      .map(x =>
+        Link(
+          fromPort = if (jobs(x._2).configPath.nonEmpty)
+            "root" + jobs(x._2).configPath.mkString("/", "/", "/") + Job.compressedName(x._2)._1 + "/output" else "root/" + Job.compressedName(x._2)._1 + "/output",
+          toPort = if  (jobs(x._1).configPath.nonEmpty)
+            "root" + jobs(x._1).configPath.mkString("/", "/", "/") + Job.compressedName(x._1)._1 + "/input" else "root/" + Job.compressedName(x._1)._1 + "/input"))
+      .toArray.distinct
+
+    def jobsToNode(jobs: List[Job], depth: Int = 0): Array[Node] = {
+      val groups = jobs.groupBy(_.configPath.lift(depth))
+      (groups.filter(_._1.isEmpty).flatMap(_._2)
+        .groupBy(x => Job.compressedName(x.name)._1)
+        .map(j => Node(name = j._1, inPorts = Array(Port(name = "input")), outPorts = Array(Port(name = "output")))) ++
+        groups.filter(_._1.isDefined).map(g => Node(name = g._1.get, children = jobsToNode(g._2, depth + 1)))).toArray
+    }
 
     Run(
       name = runId,
       user = "biopet",
       root = Node(
         name = "root",
-        children = this
-          .compressOnType()
-          .map(
-            x =>
-              Node(
-                name = x._1,
-                inPorts = Array(Port(name = "input")),
-                outPorts = Array(Port(name = "output"))
-              ))
-          .toArray
+        children = jobsToNode(jobs.values.toList)
       ),
-      links = links.toArray
+      links = links
     )
   }
 
@@ -174,7 +177,8 @@ case class Deps(jobs: Map[String, Job], files: Array[JsObject])
     publishRunToPim(makeCompressedPimRun(runId), host, deleteIfExist).flatMap { r =>
       if (r.status != 200) throw new IllegalStateException(s"Post workflow did fail. Request: $r  Body: ${r.body}")
       val payload = jobs.map(job => PimJob(name = job._1, title = Some(job._1), description = Some(job._1),
-        node = "root/" + job._2.compressedName._1,
+        node = if (job._2.configPath.nonEmpty)
+          "root" + job._2.configPath.mkString("/","/","/") + job._2.compressedName._1 else "root/" + job._2.compressedName._1,
         status = 0).toString).mkString("[", ",", "]")
       ws.url(s"$host/api/runs/$runId/jobs")
         .withHeaders("Accept" -> "application/json",

@@ -191,7 +191,8 @@ object PipelineStatus extends ToolCommand[Args] {
       val future = if (changes.nonEmpty) {
         val payload = if (pimCompress){
           changes.map(job => PimJob(name = job._1._1,
-            node = "root/" + job._1._2.compressedName._1,
+            node = if (job._1._2.configPath.nonEmpty)
+              "root" + job._1._2.configPath.mkString("/","/","/") + job._1._2.compressedName._1 else "root/" + job._1._2.compressedName._1,
             status = statusToId(job._2)).toString).mkString("[",",","]")
         } else {
           changes.map(job => PimJob(name = job._1._1,

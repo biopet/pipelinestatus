@@ -12,4 +12,4 @@ case class Args(pipelineDir: File = null,
                 pimHost: Option[String] = None,
                 pimRunId: Option[String] = None,
                 pimDeleteIfExist: Boolean = false,
-                pimCompress: Boolean = false)
+                pimCompress: Boolean = true)
