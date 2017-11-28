@@ -7,6 +7,7 @@ import nl.biopet.utils.Logging
 import play.api.libs.json.{JsArray, JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.libs.ws.ahc.AhcWSClient
+import nl.biopet.tools.pipelinestatus.pim.{Job => PimJob}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -57,48 +58,230 @@ case class Deps(jobs: Map[String, Job], files: Array[JsObject])
   }
 
   def makePimRun(runId: String): Run = {
-    val links: List[Link] = this
-      .compressOnType()
-      .flatMap(x =>
-        x._2.map(y => Link("link", y, "output", x._1, "input", "test")))
-      .toList
+    def links: Array[Link] =
+      this.jobs
+        .flatMap { case (_, job) => job.dependsOnJobs.map(y => (job.name, y)) }
+        .map {
+          case (toNode, fromNode) =>
+            Link(
+              fromPort =
+                if (jobs(toNode).configPath.nonEmpty)
+                  "root" + jobs(toNode).configPath
+                    .mkString("/", "/", "/") + toNode + "/output"
+                else "root/" + toNode + "/output",
+              toPort =
+                if (jobs(fromNode).configPath.nonEmpty)
+                  "root" + jobs(fromNode).configPath
+                    .mkString("/", "/", "/") + fromNode + "/input"
+                else "root/" + fromNode + "/input"
+            )
+        }
+        .toArray
+
+    def jobsToNode(jobs: List[Job], depth: Int = 0): Array[Node] = {
+      val groups = jobs.groupBy(_.configPath.lift(depth))
+
+      // Getting jobs from this node
+      val jobsNodes = groups
+        .filter(_._1.isEmpty)
+        .flatMap(_._2)
+        .map(
+          job =>
+            Node(name = job.name,
+                 inPorts = Array(Port(name = "input")),
+                 outPorts = Array(Port(name = "output"))))
+
+      // Getting all sub nodes
+      val subNodes = groups
+        .filter(_._1.isDefined)
+        .map(g =>
+          Node(name = g._1.get, children = jobsToNode(g._2, depth + 1)))
+
+      (jobsNodes ++ subNodes).toArray
+    }
+
     Run(
-      runId,
-      Network("graph",
-              Nil,
-              this
-                .compressOnType()
-                .map(
-                  x =>
-                    Node(x._1,
-                         "root",
-                         List(Port("input", "input")),
-                         List(Port("output", "output")),
-                         "test"))
-                .toList,
-              links),
-      "Biopet pipeline",
-      "biopet"
+      name = runId,
+      user = "biopet",
+      root = Node(
+        name = "root",
+        children = jobsToNode(jobs.values.toList)
+      ),
+      links = links
     )
   }
 
-  /** This publish the graph to a pim host */
-  def publishCompressedGraphToPim(host: String, runId: String)(
+  def publishGraphToPim(host: String,
+                        runId: String,
+                        deleteIfExist: Boolean = false)(
       implicit ws: AhcWSClient): Future[WSResponse] = {
-    val pimRun = makePimRun(runId)
-    val request = ws
-      .url(s"$host/api/runs/")
+
+    publishRunToPim(makePimRun(runId), host, deleteIfExist).flatMap { r =>
+      if (r.status != 200)
+        throw new IllegalStateException(
+          s"Post workflow did fail. Request: $r  Body: ${r.body}")
+      val payload = jobs
+        .map(
+          job =>
+            PimJob(
+              name = job._1,
+              title = Some(job._1),
+              description = Some(job._1),
+              node =
+                if (job._2.configPath.nonEmpty)
+                  "root" + job._2.configPath.mkString("/", "/", "/") + job._1
+                else "root/" + job._1,
+              status = 0
+            ).toString)
+        .mkString("[", ",", "]")
+      ws.url(s"$host/api/runs/$runId/jobs")
+        .withHeaders("Accept" -> "application/json",
+                     "Content-Type" -> "application/json")
+        .post(payload)
+        .map { r =>
+          if (r.status == 200) logger.debug(r)
+          else
+            logger.warn(
+              s"Post jobs did fail. Request: $r  Body: ${r.body}  payload: $payload")
+          r
+        }
+    }
+  }
+
+  def makeCompressedPimRun(runId: String): Run = {
+    def links: Array[Link] =
+      this.jobs
+        .flatMap(x => x._2.dependsOnJobs.map(y => (x._1, y)))
+        .map(x =>
+          Link(
+            fromPort =
+              if (jobs(x._2).configPath.nonEmpty)
+                "root" + jobs(x._2).configPath.mkString("/", "/", "/") + Job
+                  .compressedName(x._2)
+                  ._1 + "/output"
+              else "root/" + Job.compressedName(x._2)._1 + "/output",
+            toPort =
+              if (jobs(x._1).configPath.nonEmpty)
+                "root" + jobs(x._1).configPath.mkString("/", "/", "/") + Job
+                  .compressedName(x._1)
+                  ._1 + "/input"
+              else "root/" + Job.compressedName(x._1)._1 + "/input"
+        ))
+        .toArray
+        .distinct
+
+    def jobsToNode(jobs: List[Job], depth: Int = 0): Array[Node] = {
+      val groups = jobs.groupBy(_.configPath.lift(depth))
+      (groups
+        .filter(_._1.isEmpty)
+        .flatMap(_._2)
+        .groupBy(x => Job.compressedName(x.name)._1)
+        .map(j =>
+          Node(name = j._1,
+               inPorts = Array(Port(name = "input")),
+               outPorts = Array(Port(name = "output")))) ++
+        groups
+          .filter(_._1.isDefined)
+          .map(g =>
+            Node(name = g._1.get, children = jobsToNode(g._2, depth + 1)))).toArray
+    }
+
+    Run(
+      name = runId,
+      user = "biopet",
+      root = Node(
+        name = "root",
+        children = jobsToNode(jobs.values.toList)
+      ),
+      links = links
+    )
+  }
+
+  def publishRunToPim(pimRun: Run,
+                      host: String,
+                      deleteIfExist: Boolean = false)(
+      implicit ws: AhcWSClient): Future[WSResponse] = {
+    val runId = pimRun.name
+    val checkRequest = ws
+      .url(s"$host/api/runs/$runId")
       .withHeaders("Accept" -> "application/json",
                    "Content-Type" -> "application/json")
-      .put(pimRun.toString)
+      .get()
 
-    request.onFailure { case e => logger.warn("Post workflow did fail", e) }
-    request.onSuccess {
-      case r if r.status == 200 =>
-        logger.debug(r)
-      case r => logger.warn(r)
+    def postNew() =
+      ws.url(s"$host/api/runs/")
+        .withHeaders("Accept" -> "application/json",
+                     "Content-Type" -> "application/json")
+        .post(pimRun.toString)
+        .map { r =>
+          if (r.status != 200)
+            throw new IllegalStateException(
+              s"Post workflow did fail. Request: $r  Body: ${r.body}  Payload: ${pimRun.toString}")
+          else r
+        }
+
+    checkRequest.flatMap { r =>
+      if (r.status == 200) {
+        if (deleteIfExist) {
+          val delRequest = ws
+            .url(s"$host/api/runs/$runId")
+            .withHeaders("Accept" -> "application/json",
+                         "Content-Type" -> "application/json")
+            .delete()
+          delRequest.flatMap { delR =>
+            if (delR.status == 200) postNew()
+            else
+              throw new IllegalStateException(
+                s"Delete workflow did fail. Request: $r  Body: ${r.body}")
+          }
+        } else
+          throw new IllegalStateException(
+            s"Run '$runId' already exist on pim instance")
+      } else if (r.status == 404) postNew()
+      else
+        throw new IllegalStateException(
+          s"Get workflow did fail. Request: $r  Body: ${r.body}")
     }
-    request
+  }
+
+  /** This publish the graph to a pim host */
+  def publishCompressedGraphToPim(host: String,
+                                  runId: String,
+                                  deleteIfExist: Boolean = false)(
+      implicit ws: AhcWSClient): Future[WSResponse] = {
+
+    publishRunToPim(makeCompressedPimRun(runId), host, deleteIfExist).flatMap {
+      r =>
+        if (r.status != 200)
+          throw new IllegalStateException(
+            s"Post workflow did fail. Request: $r  Body: ${r.body}")
+        val payload = jobs
+          .map(
+            job =>
+              PimJob(
+                name = job._1,
+                title = Some(job._1),
+                description = Some(job._1),
+                node =
+                  if (job._2.configPath.nonEmpty)
+                    "root" + job._2.configPath
+                      .mkString("/", "/", "/") + job._2.compressedName._1
+                  else "root/" + job._2.compressedName._1,
+                status = 0
+              ).toString)
+          .mkString("[", ",", "]")
+        ws.url(s"$host/api/runs/$runId/jobs")
+          .withHeaders("Accept" -> "application/json",
+                       "Content-Type" -> "application/json")
+          .post(payload)
+          .map { r =>
+            if (r.status == 200) logger.debug(r)
+            else
+              logger.warn(
+                s"Post jobs did fail. Request: $r  Body: ${r.body}  payload: $payload")
+            r
+          }
+    }
   }
 }
 

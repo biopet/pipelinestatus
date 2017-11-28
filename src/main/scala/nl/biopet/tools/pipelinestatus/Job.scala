@@ -2,7 +2,7 @@ package nl.biopet.tools.pipelinestatus
 
 import java.io.File
 
-import play.api.libs.json.JsObject
+import play.api.libs.json.{JsArray, JsObject}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -59,6 +59,11 @@ class Job(val name: String, map: JsObject) {
 
   /** Returns the compressed name of this job */
   def compressedName: (String, Int) = Job.compressedName(name)
+
+  /** Getting config path of job */
+  def configPath: List[String] = {
+    (map \ "config_path").getOrElse(JsArray.empty).as[List[String]]
+  }
 }
 
 object Job {

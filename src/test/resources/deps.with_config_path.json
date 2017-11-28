@@ -1,0 +1,47 @@
+{
+  "jobs": {
+    "job_1": {
+      "inputs": [],
+      "outputs": [],
+      "stdout_file": "stdout1",
+      "depends_on_jobs": [],
+      "output_used_by_jobs": ["job_2"],
+      "done_at_start": true,
+      "fail_files": [".stdout1.fail"],
+      "done_files": [".stdout1.done"],
+      "main_job": true,
+      "intermediate": false,
+      "config_path": ["rootPipeline"]
+    },
+    "job_2": {
+      "inputs": [],
+      "outputs": [],
+      "stdout_file": "stdout2",
+      "depends_on_jobs": ["job_1"],
+      "output_used_by_jobs": ["jobX_3"],
+      "done_at_start": false,
+      "fail_files": [".stdout2.fail"],
+      "done_files": [".stdout2.done"],
+      "main_job": false,
+      "intermediate": true,
+      "config_path": ["rootPipeline", "subPipeline"]
+    },
+    "jobX_3": {
+      "inputs": [],
+      "outputs": [],
+      "stdout_file": "stdout3",
+      "depends_on_jobs": ["job_2"],
+      "output_used_by_jobs": [],
+      "done_at_start": false,
+      "fail_files": [".stdout3.fail"],
+      "done_files": [".stdout3.done"],
+      "main_job": true,
+      "intermediate": false,
+      "config_path": ["rootPipeline", "subPipeline"]
+    }
+  }, "files": [
+  {
+
+  }
+  ]
+}

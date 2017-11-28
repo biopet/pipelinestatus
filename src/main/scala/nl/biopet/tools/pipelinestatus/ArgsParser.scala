@@ -35,4 +35,10 @@ class ArgsParser(cmdName: String) extends AbstractOptParser[Args](cmdName) {
   opt[String]("pimRunId") maxOccurs 1 action { (x, c) =>
     c.copy(pimRunId = Some(x))
   } text "Pim run Id to publish status to"
+  opt[Unit]("pimDeleteIfExist") maxOccurs 1 action { (x, c) =>
+    c.copy(pimDeleteIfExist = true)
+  } text "Delete run if it already exists"
+  opt[Unit]("pimFullGraph") maxOccurs 1 action { (x, c) =>
+    c.copy(pimCompress = false)
+  } text "Compress nodes to publish to PIM"
 }
