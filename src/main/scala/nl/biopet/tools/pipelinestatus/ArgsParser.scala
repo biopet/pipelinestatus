@@ -30,7 +30,7 @@ class ArgsParser(cmdName: String) extends AbstractOptParser[Args](cmdName) {
     c.copy(compressPlots = false)
   } text "Disable compressed plots. By default compressed plots are enabled."
   opt[String]("pimHost") maxOccurs 1 action { (x, c) =>
-    c.copy(pimHost = Some(x))
+    c.copy(pimHost = Some(x.stripSuffix("/")))
   } text "Pim host to publish status to"
   opt[String]("pimRunId") maxOccurs 1 action { (x, c) =>
     c.copy(pimRunId = Some(x))
