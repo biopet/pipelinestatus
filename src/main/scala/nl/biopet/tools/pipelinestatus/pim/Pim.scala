@@ -59,7 +59,7 @@ case class Link(fromPort: String,
   def toMap: Map[String, Any] = Map(
     "fromPort" -> fromPort,
     "toPort" -> toPort,
-    "type" -> linkType,
+    "linkType" -> linkType,
     "title" -> title,
     "description" -> description,
     "customData" -> customData
