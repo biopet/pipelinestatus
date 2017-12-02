@@ -89,15 +89,18 @@ case class Deps(jobs: Map[String, Job], files: Array[JsObject])
           job =>
             Node(name = job.name,
                  inPorts = Array(Port(name = "input", title = Some("input"))),
-                 outPorts = Array(Port(name = "output", title = Some("output"))),
-                title = Some(job.name)
-            ))
+                 outPorts =
+                   Array(Port(name = "output", title = Some("output"))),
+                 title = Some(job.name)))
 
       // Getting all sub nodes
       val subNodes = groups
         .filter(_._1.isDefined)
-        .map(g =>
-          Node(title = Some(g._1.get), name = g._1.get, children = jobsToNode(g._2, depth + 1)))
+        .map(
+          g =>
+            Node(title = Some(g._1.get),
+                 name = g._1.get,
+                 children = jobsToNode(g._2, depth + 1)))
 
       (jobsNodes ++ subNodes).toArray
     }
@@ -155,30 +158,34 @@ case class Deps(jobs: Map[String, Job], files: Array[JsObject])
     val links: Array[Link] =
       this.jobs.values
         .flatMap(x => x.dependsOnJobs.map(y => (x.name, y)))
-        .flatMap { case (to, from) =>
-          val outputFiles = jobs(from).outputsFiles
-          val inputFiles = jobs(to).inputFiles
-          outputFiles
-            .filter(x => inputFiles.contains(x))
-            .map(_.getName.stripSuffix(".gz").split("\\.").last)
-            .distinct
-            .map(x => Link(
-              fromPort =
-                if (jobs(from).configPath.nonEmpty)
-                  "root" + jobs(from).configPath.mkString("/", "/", "/") + Job
-                    .compressedName(from)
-                    ._1 + s"/$x"
-                else "root/" + Job.compressedName(from)._1 + s"/$x",
-              toPort =
-                if (jobs(to).configPath.nonEmpty)
-                  "root" + jobs(to).configPath.mkString("/", "/", "/") + Job
-                    .compressedName(to)
-                    ._1 + s"/$x"
-                else "root/" + Job.compressedName(to)._1 + s"/$x",
-              linkType = Some(x),
-              title = Some(x),
-              description = Some(x)
-            ))
+        .flatMap {
+          case (to, from) =>
+            val outputFiles = jobs(from).outputsFiles
+            val inputFiles = jobs(to).inputFiles
+            outputFiles
+              .filter(x => inputFiles.contains(x))
+              .map(_.getName.stripSuffix(".gz").split("\\.").last)
+              .distinct
+              .map(x =>
+                Link(
+                  fromPort =
+                    if (jobs(from).configPath.nonEmpty)
+                      "root" + jobs(from).configPath
+                        .mkString("/", "/", "/") + Job
+                        .compressedName(from)
+                        ._1 + s"/$x"
+                    else "root/" + Job.compressedName(from)._1 + s"/$x",
+                  toPort =
+                    if (jobs(to).configPath.nonEmpty)
+                      "root" + jobs(to).configPath
+                        .mkString("/", "/", "/") + Job
+                        .compressedName(to)
+                        ._1 + s"/$x"
+                    else "root/" + Job.compressedName(to)._1 + s"/$x",
+                  linkType = Some(x),
+                  title = Some(x),
+                  description = Some(x)
+              ))
         }
         .toArray
         .distinct
@@ -190,22 +197,31 @@ case class Deps(jobs: Map[String, Job], files: Array[JsObject])
         .flatMap(_._2)
         .groupBy(x => Job.compressedName(x.name)._1)
         .map { j =>
-          val inPorts = j._2
-            .toList
+          val inPorts = j._2.toList
             .flatMap(_.inputFiles)
             .map(_.getName.stripSuffix(".gz").split("\\.").last)
-            .toArray.distinct.map(x => Port(name = x, title = Some(x)))
-          val outPorts = j._2.toList.flatMap(_.outputsFiles).map(_.getName.stripSuffix(".gz").split("\\.").last).toArray.distinct.map(x => Port(name = x, title = Some(x)))
+            .toArray
+            .distinct
+            .map(x => Port(name = x, title = Some(x)))
+          val outPorts = j._2.toList
+            .flatMap(_.outputsFiles)
+            .map(_.getName.stripSuffix(".gz").split("\\.").last)
+            .toArray
+            .distinct
+            .map(x => Port(name = x, title = Some(x)))
 
           Node(name = j._1,
-            title = Some(j._1),
+               title = Some(j._1),
                inPorts = inPorts,
                outPorts = outPorts)
         } ++
         groups
           .filter(_._1.isDefined)
-          .map(g =>
-            Node(name = g._1.get, title = Some(g._1.get), children = jobsToNode(g._2, depth + 1)))).toArray
+          .map(
+            g =>
+              Node(name = g._1.get,
+                   title = Some(g._1.get),
+                   children = jobsToNode(g._2, depth + 1)))).toArray
     }
 
     Run(
