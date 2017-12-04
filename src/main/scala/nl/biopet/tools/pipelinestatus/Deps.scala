@@ -58,22 +58,22 @@ case class Deps(jobs: Map[String, Job], files: Array[JsObject])
   }
 
   def makePimRun(runId: String): Run = {
-    def links: Array[Link] =
-      this.jobs
-        .flatMap { case (_, job) => job.dependsOnJobs.map(y => (job.name, y)) }
+    val links: Array[Link] =
+      this.jobs.values
+        .flatMap(x => x.dependsOnJobs.map(y => (x.name, y)))
         .map {
           case (toNode, fromNode) =>
             Link(
               fromPort =
-                if (jobs(toNode).configPath.nonEmpty)
-                  "root" + jobs(toNode).configPath
-                    .mkString("/", "/", "/") + toNode + "/output"
-                else "root/" + toNode + "/output",
-              toPort =
                 if (jobs(fromNode).configPath.nonEmpty)
                   "root" + jobs(fromNode).configPath
-                    .mkString("/", "/", "/") + fromNode + "/input"
-                else "root/" + fromNode + "/input"
+                    .mkString("/", "/", "/") + fromNode + "/output"
+                else "root/" + fromNode + "/output",
+              toPort =
+                if (jobs(toNode).configPath.nonEmpty)
+                  "root" + jobs(toNode).configPath
+                    .mkString("/", "/", "/") + toNode + "/input"
+                else "root/" + toNode + "/input"
             )
         }
         .toArray
@@ -88,14 +88,19 @@ case class Deps(jobs: Map[String, Job], files: Array[JsObject])
         .map(
           job =>
             Node(name = job.name,
-                 inPorts = Array(Port(name = "input")),
-                 outPorts = Array(Port(name = "output"))))
+                 inPorts = Array(Port(name = "input", title = Some("input"))),
+                 outPorts =
+                   Array(Port(name = "output", title = Some("output"))),
+                 title = Some(job.name)))
 
       // Getting all sub nodes
       val subNodes = groups
         .filter(_._1.isDefined)
-        .map(g =>
-          Node(name = g._1.get, children = jobsToNode(g._2, depth + 1)))
+        .map(
+          g =>
+            Node(title = Some(g._1.get),
+                 name = g._1.get,
+                 children = jobsToNode(g._2, depth + 1)))
 
       (jobsNodes ++ subNodes).toArray
     }
@@ -105,6 +110,7 @@ case class Deps(jobs: Map[String, Job], files: Array[JsObject])
       user = "biopet",
       root = Node(
         name = "root",
+        title = Some("root"),
         children = jobsToNode(jobs.values.toList)
       ),
       links = links
@@ -149,24 +155,38 @@ case class Deps(jobs: Map[String, Job], files: Array[JsObject])
   }
 
   def makeCompressedPimRun(runId: String): Run = {
-    def links: Array[Link] =
-      this.jobs
-        .flatMap(x => x._2.dependsOnJobs.map(y => (x._1, y)))
-        .map(x =>
-          Link(
-            fromPort =
-              if (jobs(x._2).configPath.nonEmpty)
-                "root" + jobs(x._2).configPath.mkString("/", "/", "/") + Job
-                  .compressedName(x._2)
-                  ._1 + "/output"
-              else "root/" + Job.compressedName(x._2)._1 + "/output",
-            toPort =
-              if (jobs(x._1).configPath.nonEmpty)
-                "root" + jobs(x._1).configPath.mkString("/", "/", "/") + Job
-                  .compressedName(x._1)
-                  ._1 + "/input"
-              else "root/" + Job.compressedName(x._1)._1 + "/input"
-        ))
+    val links: Array[Link] =
+      this.jobs.values
+        .flatMap(x => x.dependsOnJobs.map(y => (x.name, y)))
+        .flatMap {
+          case (to, from) =>
+            val outputFiles = jobs(from).outputsFiles
+            val inputFiles = jobs(to).inputFiles
+            outputFiles
+              .filter(x => inputFiles.contains(x))
+              .map(_.getName.stripSuffix(".gz").split("\\.").last)
+              .distinct
+              .map(x =>
+                Link(
+                  fromPort =
+                    if (jobs(from).configPath.nonEmpty)
+                      "root" + jobs(from).configPath
+                        .mkString("/", "/", "/") + Job
+                        .compressedName(from)
+                        ._1 + s"/$x"
+                    else "root/" + Job.compressedName(from)._1 + s"/$x",
+                  toPort =
+                    if (jobs(to).configPath.nonEmpty)
+                      "root" + jobs(to).configPath
+                        .mkString("/", "/", "/") + Job
+                        .compressedName(to)
+                        ._1 + s"/$x"
+                    else "root/" + Job.compressedName(to)._1 + s"/$x",
+                  linkType = Some(x),
+                  title = Some(x),
+                  description = Some(x)
+              ))
+        }
         .toArray
         .distinct
 
@@ -176,21 +196,41 @@ case class Deps(jobs: Map[String, Job], files: Array[JsObject])
         .filter(_._1.isEmpty)
         .flatMap(_._2)
         .groupBy(x => Job.compressedName(x.name)._1)
-        .map(j =>
+        .map { j =>
+          val inPorts = j._2.toList
+            .flatMap(_.inputFiles)
+            .map(_.getName.stripSuffix(".gz").split("\\.").last)
+            .toArray
+            .distinct
+            .map(x => Port(name = x, title = Some(x)))
+          val outPorts = j._2.toList
+            .flatMap(_.outputsFiles)
+            .map(_.getName.stripSuffix(".gz").split("\\.").last)
+            .toArray
+            .distinct
+            .map(x => Port(name = x, title = Some(x)))
+
           Node(name = j._1,
-               inPorts = Array(Port(name = "input")),
-               outPorts = Array(Port(name = "output")))) ++
+               title = Some(j._1),
+               inPorts = inPorts,
+               outPorts = outPorts)
+        } ++
         groups
           .filter(_._1.isDefined)
-          .map(g =>
-            Node(name = g._1.get, children = jobsToNode(g._2, depth + 1)))).toArray
+          .map(
+            g =>
+              Node(name = g._1.get,
+                   title = Some(g._1.get),
+                   children = jobsToNode(g._2, depth + 1)))).toArray
     }
 
     Run(
       name = runId,
+      title = Some(runId),
       user = "biopet",
       root = Node(
         name = "root",
+        title = Some("root"),
         children = jobsToNode(jobs.values.toList)
       ),
       links = links

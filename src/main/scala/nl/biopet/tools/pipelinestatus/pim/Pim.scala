@@ -59,7 +59,7 @@ case class Link(fromPort: String,
   def toMap: Map[String, Any] = Map(
     "fromPort" -> fromPort,
     "toPort" -> toPort,
-    "type" -> linkType,
+    "linkType" -> linkType,
     "title" -> title,
     "description" -> description,
     "customData" -> customData
@@ -101,12 +101,14 @@ case class StatusType(description: Option[String] = None,
 case class Port(name: String,
                 description: Option[String] = None,
                 title: Option[String] = None,
+                dataType: Option[String] = None,
                 customData: Map[String, Any] = Map())
     extends PimClasses {
   def toMap: Map[String, Any] = Map(
     "name" -> name,
     "title" -> title,
     "description" -> description,
+    "dataType" -> dataType,
     "customData" -> customData
   )
 }
