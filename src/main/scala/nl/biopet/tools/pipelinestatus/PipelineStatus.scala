@@ -436,7 +436,7 @@ object PipelineStatus extends ToolCommand[Args] {
     """
                           | This tool keeps track of the status of a biopet pipeline.
                           |
-                          | It also possible to push the status. For this is PIM host should be provided
+                          | It also possible to push the status. For this a PIM host should be provided.
                         """.stripMargin
 
   def manualText: String =
