@@ -17,7 +17,7 @@ import scala.sys.process.Process
 
 object PipelineStatus extends ToolCommand[Args] {
 
-  def argsParser = new ArgsParser(toolName)
+  def argsParser = new ArgsParser(this)
 
   def emptyArgs = Args()
 
