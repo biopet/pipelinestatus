@@ -447,14 +447,24 @@ object PipelineStatus extends ToolCommand[Args] {
     """.stripMargin
 
   def exampleText: String =
-    """
+    s"""
                       | This will generate a default status check and trying to auto detect the graph:
-                      | ```java -jar <tool_jar> -d <pipeline_dir> -o <output_dir>```
+                      | ${example("-d", "<pipeline_dir>", "-o", "<output_dir>")}
                       |
                       | This will follow the pipeline and update the results each interval:
-                      | ```java -jar <tool_jar> -d <pipeline_dir> -o <output_dir> -f```
+                      | ${example("-d",
+                                  "<pipeline_dir>",
+                                  "-o",
+                                  "<output_dir>",
+                                  "-f")}
                       |
                       | To push to PIM this should be added:
-                      | ```java -jar <tool_jar> -d <pipeline_dir> -o <output_dir> -f -pimHost <pim_url>```
+                      | ${example("-d",
+                                  "<pipeline_dir>",
+                                  "-o",
+                                  "<output_dir>",
+                                  "-f",
+                                  "--pimHost",
+                                  "<pim_url>")}
                     """.stripMargin
 }
