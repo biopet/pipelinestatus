@@ -70,11 +70,10 @@ object PipelineStatus extends ToolCommand[Args] {
       logger.info(
         s"Status will be pushed to ${cmdArgs.pimHost.get}/run/${pimRunId.get}")
       if (cmdArgs.pimCompress)
-        Await.result(
-          deps.publishCompressedGraphToPim(cmdArgs.pimHost.get,
-                                           pimRunId.get,
-                                           cmdArgs.pimDeleteIfExist),
-          Duration.Inf)
+        Await.result(deps.publishCompressedGraphToPim(cmdArgs.pimHost.get,
+                                                      pimRunId.get,
+                                                      cmdArgs.pimDeleteIfExist),
+                     Duration.Inf)
       else
         Await.result(deps.publishGraphToPim(cmdArgs.pimHost.get,
                                             pimRunId.get,
@@ -158,8 +157,7 @@ object PipelineStatus extends ToolCommand[Args] {
       case (name, _) => name -> deps.getMainDependencies(name)
     }
 
-    val mainJobsWriter = new PrintWriter(
-      new File(outputDir, s"main_jobs.json"))
+    val mainJobsWriter = new PrintWriter(new File(outputDir, s"main_jobs.json"))
     mainJobsWriter.println(conversions.mapToJson(mainJobs))
     mainJobsWriter.close()
     futures :+= writeGraphvizFile(new File(outputDir, s"main_jobs.gv"),
@@ -170,16 +168,15 @@ object PipelineStatus extends ToolCommand[Args] {
                                   plots,
                                   plots,
                                   main = true)
-    futures :+= writeGraphvizFile(
-      new File(outputDir, s"compress.main_jobs.gv"),
-      jobDone,
-      jobFailed,
-      jobsStart,
-      deps,
-      compressPlots,
-      compressPlots,
-      compress = true,
-      main = true)
+    futures :+= writeGraphvizFile(new File(outputDir, s"compress.main_jobs.gv"),
+                                  jobDone,
+                                  jobFailed,
+                                  jobsStart,
+                                  deps,
+                                  compressPlots,
+                                  compressPlots,
+                                  compress = true,
+                                  main = true)
 
     val totalJobs = deps.jobs.size
     val totalStart = jobsStart.size
@@ -198,8 +195,8 @@ object PipelineStatus extends ToolCommand[Args] {
         val status = job._1 match {
           case n if jobsStart.contains(n) => JobStatus.running
           case n if jobFailed.contains(n) => JobStatus.failed
-          case n if jobDone.contains(n) => JobStatus.success
-          case _ => JobStatus.idle
+          case n if jobDone.contains(n)   => JobStatus.success
+          case _                          => JobStatus.idle
         }
 
         if (!pimStatus.get(job._1).contains(status)) Some((job, status))
@@ -208,10 +205,10 @@ object PipelineStatus extends ToolCommand[Args] {
 
       def statusToId(jobStatus: JobStatus.Value): Int = {
         jobStatus match {
-          case JobStatus.idle => 0
+          case JobStatus.idle    => 0
           case JobStatus.running => 1
           case JobStatus.success => 2
-          case JobStatus.failed => 3
+          case JobStatus.failed  => 3
         }
       }
 

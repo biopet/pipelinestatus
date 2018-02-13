@@ -50,8 +50,7 @@ case class Deps(jobs: Map[String, Job], files: Array[JsObject])
   def compressOnType(main: Boolean = false): Map[String, List[String]] = {
     (for ((_, job) <- jobs.toSet if !main || job.mainJob) yield {
       job.name -> (if (main)
-                     getMainDependencies(job.name).map(
-                       Job.compressedName(_)._1)
+                     getMainDependencies(job.name).map(Job.compressedName(_)._1)
                    else job.dependsOnJobs.map(Job.compressedName(_)._1))
     }).groupBy(x => Job.compressedName(x._1)._1)
       .map(x => x._1 -> x._2.flatMap(_._2).toList.distinct)
@@ -103,16 +102,17 @@ case class Deps(jobs: Map[String, Job], files: Array[JsObject])
       val groups = jobs.groupBy(_.configPath.lift(depth))
 
       // Getting jobs from this node
-      val jobsNodes = groups
-        .filter(_._1.isEmpty)
-        .flatMap(_._2)
-        .map(
-          job =>
-            Node(name = job.name,
-                 inPorts = Array(Port(name = "input", title = Some("input"))),
-                 outPorts =
-                   Array(Port(name = "output", title = Some("output"))),
-                 title = Some(job.name)))
+      val jobsNodes =
+        groups
+          .filter(_._1.isEmpty)
+          .flatMap(_._2)
+          .map(
+            job =>
+              Node(name = job.name,
+                   inPorts = Array(Port(name = "input", title = Some("input"))),
+                   outPorts =
+                     Array(Port(name = "output", title = Some("output"))),
+                   title = Some(job.name)))
 
       // Getting all sub nodes
       val subNodes = groups
