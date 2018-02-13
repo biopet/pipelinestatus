@@ -35,12 +35,12 @@ trait PimClasses {
       toMap
         .filter {
           case (_, None) => false
-          case _ => true
+          case _         => true
         }
         .map {
-          case (key, value: PimClasses) => key -> value.toJson
+          case (key, value: PimClasses)        => key -> value.toJson
           case (key, value: Array[PimClasses]) => key -> value.map(_.toJson)
-          case (key, value) => key -> value
+          case (key, value)                    => key -> value
         })
   }
 
