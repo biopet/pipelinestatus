@@ -122,102 +122,102 @@
         
         <h2 id="usage" class="section">Usage</h2>
         <p>Usage for PipelineStatus:</p>
-        <p>&lt;table class=&quot;table&quot;&gt;
-          &lt;thead&gt;
-            &lt;tr&gt;
-              &lt;th&gt;Option&lt;/th&gt;
-              &lt;th&gt;Required&lt;/th&gt;
-              &lt;th&gt;Can occur multiple times&lt;/th&gt;
-              &lt;th&gt;Description&lt;/th&gt;
-            &lt;/tr&gt;
-          &lt;/thead&gt;
-          &lt;tbody&gt;
-            &lt;tr&gt;
-              &lt;td&gt;--log_level, -l&lt;/td&gt;
-              &lt;td&gt;no&lt;/td&gt;
-              &lt;td&gt;no&lt;/td&gt;
-              &lt;td&gt;Level of log information printed. Possible levels: &#39;debug&#39;, &#39;info&#39;, &#39;warn&#39;, &#39;error&#39;&lt;/td&gt;
-            &lt;/tr&gt;
-            &lt;tr&gt;
-              &lt;td&gt;--help, -h&lt;/td&gt;
-              &lt;td&gt;no&lt;/td&gt;
-              &lt;td&gt;no&lt;/td&gt;
-              &lt;td&gt;Print usage&lt;/td&gt;
-            &lt;/tr&gt;
-            &lt;tr&gt;
-              &lt;td&gt;--version, -v&lt;/td&gt;
-              &lt;td&gt;no&lt;/td&gt;
-              &lt;td&gt;no&lt;/td&gt;
-              &lt;td&gt;Print version&lt;/td&gt;
-            &lt;/tr&gt;
-            &lt;tr&gt;
-              &lt;td&gt;--pipelineDir, -d&lt;/td&gt;
-              &lt;td&gt;yes&lt;/td&gt;
-              &lt;td&gt;no&lt;/td&gt;
-              &lt;td&gt;Output directory of the pipeline&lt;/td&gt;
-            &lt;/tr&gt;
-            &lt;tr&gt;
-              &lt;td&gt;--outputDir, -o&lt;/td&gt;
-              &lt;td&gt;yes&lt;/td&gt;
-              &lt;td&gt;no&lt;/td&gt;
-              &lt;td&gt;Output directory of this tool&lt;/td&gt;
-            &lt;/tr&gt;
-            &lt;tr&gt;
-              &lt;td&gt;--depsFile&lt;/td&gt;
-              &lt;td&gt;no&lt;/td&gt;
-              &lt;td&gt;no&lt;/td&gt;
-              &lt;td&gt;Location of deps file, not required&lt;/td&gt;
-            &lt;/tr&gt;
-            &lt;tr&gt;
-              &lt;td&gt;--follow, -f&lt;/td&gt;
-              &lt;td&gt;no&lt;/td&gt;
-              &lt;td&gt;no&lt;/td&gt;
-              &lt;td&gt;This will follow a run&lt;/td&gt;
-            &lt;/tr&gt;
-            &lt;tr&gt;
-              &lt;td&gt;--refresh&lt;/td&gt;
-              &lt;td&gt;no&lt;/td&gt;
-              &lt;td&gt;no&lt;/td&gt;
-              &lt;td&gt;Time to check again, default set on 30 seconds&lt;/td&gt;
-            &lt;/tr&gt;
-            &lt;tr&gt;
-              &lt;td&gt;--completePlots&lt;/td&gt;
-              &lt;td&gt;no&lt;/td&gt;
-              &lt;td&gt;no&lt;/td&gt;
-              &lt;td&gt;Add complete plots, this is disabled because of performance. Complete plots does show each job separated, while compressed plots collapse all jobs of the same type together.&lt;/td&gt;
-            &lt;/tr&gt;
-            &lt;tr&gt;
-              &lt;td&gt;--skipCompressPlots&lt;/td&gt;
-              &lt;td&gt;no&lt;/td&gt;
-              &lt;td&gt;no&lt;/td&gt;
-              &lt;td&gt;Disable compressed plots. By default compressed plots are enabled.&lt;/td&gt;
-            &lt;/tr&gt;
-            &lt;tr&gt;
-              &lt;td&gt;--pimHost&lt;/td&gt;
-              &lt;td&gt;no&lt;/td&gt;
-              &lt;td&gt;no&lt;/td&gt;
-              &lt;td&gt;Pim host to publish status to&lt;/td&gt;
-            &lt;/tr&gt;
-            &lt;tr&gt;
-              &lt;td&gt;--pimRunId&lt;/td&gt;
-              &lt;td&gt;no&lt;/td&gt;
-              &lt;td&gt;no&lt;/td&gt;
-              &lt;td&gt;Pim run Id to publish status to&lt;/td&gt;
-            &lt;/tr&gt;
-            &lt;tr&gt;
-              &lt;td&gt;--pimDeleteIfExist&lt;/td&gt;
-              &lt;td&gt;no&lt;/td&gt;
-              &lt;td&gt;no&lt;/td&gt;
-              &lt;td&gt;Delete run if it already exists&lt;/td&gt;
-            &lt;/tr&gt;
-            &lt;tr&gt;
-              &lt;td&gt;--pimFullGraph&lt;/td&gt;
-              &lt;td&gt;no&lt;/td&gt;
-              &lt;td&gt;no&lt;/td&gt;
-              &lt;td&gt;Compress nodes to publish to PIM&lt;/td&gt;
-            &lt;/tr&gt;
-          &lt;/tbody&gt;
-        &lt;/table&gt;</p>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Option</th>
+              <th>Required</th>
+              <th>Can occur multiple times</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>--log_level, -l</td>
+              <td>no</td>
+              <td>no</td>
+              <td>Level of log information printed. Possible levels: &#39;debug&#39;, &#39;info&#39;, &#39;warn&#39;, &#39;error&#39;</td>
+            </tr>
+            <tr>
+              <td>--help, -h</td>
+              <td>no</td>
+              <td>no</td>
+              <td>Print usage</td>
+            </tr>
+            <tr>
+              <td>--version, -v</td>
+              <td>no</td>
+              <td>no</td>
+              <td>Print version</td>
+            </tr>
+            <tr>
+              <td>--pipelineDir, -d</td>
+              <td>yes</td>
+              <td>no</td>
+              <td>Output directory of the pipeline</td>
+            </tr>
+            <tr>
+              <td>--outputDir, -o</td>
+              <td>yes</td>
+              <td>no</td>
+              <td>Output directory of this tool</td>
+            </tr>
+            <tr>
+              <td>--depsFile</td>
+              <td>no</td>
+              <td>no</td>
+              <td>Location of deps file, not required</td>
+            </tr>
+            <tr>
+              <td>--follow, -f</td>
+              <td>no</td>
+              <td>no</td>
+              <td>This will follow a run</td>
+            </tr>
+            <tr>
+              <td>--refresh</td>
+              <td>no</td>
+              <td>no</td>
+              <td>Time to check again, default set on 30 seconds</td>
+            </tr>
+            <tr>
+              <td>--completePlots</td>
+              <td>no</td>
+              <td>no</td>
+              <td>Add complete plots, this is disabled because of performance. Complete plots does show each job separated, while compressed plots collapse all jobs of the same type together.</td>
+            </tr>
+            <tr>
+              <td>--skipCompressPlots</td>
+              <td>no</td>
+              <td>no</td>
+              <td>Disable compressed plots. By default compressed plots are enabled.</td>
+            </tr>
+            <tr>
+              <td>--pimHost</td>
+              <td>no</td>
+              <td>no</td>
+              <td>Pim host to publish status to</td>
+            </tr>
+            <tr>
+              <td>--pimRunId</td>
+              <td>no</td>
+              <td>no</td>
+              <td>Pim run Id to publish status to</td>
+            </tr>
+            <tr>
+              <td>--pimDeleteIfExist</td>
+              <td>no</td>
+              <td>no</td>
+              <td>Delete run if it already exists</td>
+            </tr>
+            <tr>
+              <td>--pimFullGraph</td>
+              <td>no</td>
+              <td>no</td>
+              <td>Compress nodes to publish to PIM</td>
+            </tr>
+          </tbody>
+        </table>
         
         <h1 id="about" class="section">About</h1>
         <p>PipelineStatus is part of BIOPET tool suite that is developed at LUMC by <a href="http://sasc.lumc.nl/">the SASC team</a>.
@@ -235,14 +235,14 @@
         good results with <a href="https://www.jetbrains.com/idea/">this IDE</a>.</p>
         
         <h1 id="contact" class="section">Contact</h1>
-        <p>&lt;p&gt;
-          &lt;!-- Obscure e-mail address for spammers --&gt;
+        <p>
+          <!-- Obscure e-mail address for spammers -->
         For any question related to PipelineStatus, please use the
-        &lt;a href=&#39;https://github.com/biopet/pipelinestatus/issues&#39;&gt;github issue tracker&lt;/a&gt;
+        <a href='https://github.com/biopet/pipelinestatus/issues'>github issue tracker</a>
         or contact
-         &lt;a href=&#39;http://sasc.lumc.nl/&#39;&gt;the SASC team&lt;/a&gt; directly at: &lt;a href=&#39;&amp;#109;&amp;#97;&amp;#105;&amp;#108;&amp;#116;&amp;#111;&amp;#58;&amp;#115;&amp;#97;&amp;#115;&amp;#99;&amp;#64;&amp;#108;&amp;#117;&amp;#109;&amp;#99;&amp;#46;&amp;#110;&amp;#108;&#39;&gt;
-        &amp;#115;&amp;#97;&amp;#115;&amp;#99;&amp;#64;&amp;#108;&amp;#117;&amp;#109;&amp;#99;&amp;#46;&amp;#110;&amp;#108;&lt;/a&gt;.
-        &lt;/p&gt;</p>      
+         <a href='http://sasc.lumc.nl/'>the SASC team</a> directly at: <a href='&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#115;&#97;&#115;&#99;&#64;&#108;&#117;&#109;&#99;&#46;&#110;&#108;'>
+        &#115;&#97;&#115;&#99;&#64;&#108;&#117;&#109;&#99;&#46;&#110;&#108;</a>.
+        </p>      
 
       </div>
     </div>
