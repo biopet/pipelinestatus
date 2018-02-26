@@ -19,7 +19,7 @@ developers := List(
 
 scalaVersion := "2.11.11"
 
-libraryDependencies += "com.github.biopet" %% "tool-utils" % "0.3-SNAPSHOT" changing ()
+libraryDependencies += "com.github.biopet" %% "tool-utils" % "0.3"
 libraryDependencies += "com.typesafe.play" %% "play-ws" % "2.5.15"
 
 libraryDependencies += "com.github.biopet" %% "tool-test-utils" % "0.2-SNAPSHOT" % Test changing ()
