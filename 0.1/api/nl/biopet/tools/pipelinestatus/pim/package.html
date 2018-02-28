@@ -1,0 +1,240 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <title>pim - nl.biopet.tools.pipelinestatus.pim</title>
+          <meta name="description" content="pim - nl.biopet.tools.pipelinestatus.pim" />
+          <meta name="keywords" content="pim nl.biopet.tools.pipelinestatus.pim" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../../../index.html';
+            var hash = 'nl.biopet.tools.pipelinestatus.pim.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img alt="Package" src="../../../../../lib/package_big.png" />
+        <p id="owner"><a href="../../../../package.html" class="extype" name="nl">nl</a>.<a href="../../../package.html" class="extype" name="nl.biopet">biopet</a>.<a href="../../package.html" class="extype" name="nl.biopet.tools">tools</a>.<a href="../package.html" class="extype" name="nl.biopet.tools.pipelinestatus">pipelinestatus</a></p>
+        <h1>pim</h1><span class="permalink">
+      <a href="../../../../../index.html#nl.biopet.tools.pipelinestatus.pim.package" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">pim</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        
+        
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="nl.biopet.tools.pipelinestatus.pim.Job" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="JobextendsPimClasseswithProductwithSerializable"></a>
+      <a id="Job:Job"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="Job.html"><span class="name">Job</span></a><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="description">description: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="title">title: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="node">node: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="status">status: <span class="extype" name="scala.Int">Int</span></span>, <span name="customData">customData: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Any">Any</span>] = <span class="symbol">Map()</span></span>)</span><span class="result"> extends <a href="PimClasses.html" class="extype" name="nl.biopet.tools.pipelinestatus.pim.PimClasses">PimClasses</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#nl.biopet.tools.pipelinestatus.pim.package@JobextendsPimClasseswithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="nl.biopet.tools.pipelinestatus.pim.Link" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LinkextendsPimClasseswithProductwithSerializable"></a>
+      <a id="Link:Link"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="Link.html"><span class="name">Link</span></a><span class="params">(<span name="fromPort">fromPort: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="toPort">toPort: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="description">description: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="linkType">linkType: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="title">title: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="customData">customData: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Any">Any</span>] = <span class="symbol">Map()</span></span>)</span><span class="result"> extends <a href="PimClasses.html" class="extype" name="nl.biopet.tools.pipelinestatus.pim.PimClasses">PimClasses</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#nl.biopet.tools.pipelinestatus.pim.package@LinkextendsPimClasseswithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="nl.biopet.tools.pipelinestatus.pim.Node" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="NodeextendsPimClasseswithProductwithSerializable"></a>
+      <a id="Node:Node"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="Node.html"><span class="name">Node</span></a><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="description">description: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="title">title: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="inPorts">inPorts: <span class="extype" name="scala.Array">Array</span>[<a href="Port.html" class="extype" name="nl.biopet.tools.pipelinestatus.pim.Port">Port</a>] = <span class="symbol">Array()</span></span>, <span name="outPorts">outPorts: <span class="extype" name="scala.Array">Array</span>[<a href="Port.html" class="extype" name="nl.biopet.tools.pipelinestatus.pim.Port">Port</a>] = <span class="symbol">Array()</span></span>, <span name="nodeType">nodeType: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="children">children: <span class="extype" name="scala.Array">Array</span>[<a href="Node.html" class="extype" name="nl.biopet.tools.pipelinestatus.pim.Node">Node</a>] = <span class="symbol">Array()</span></span>, <span name="customData">customData: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Any">Any</span>] = <span class="symbol">Map()</span></span>)</span><span class="result"> extends <a href="PimClasses.html" class="extype" name="nl.biopet.tools.pipelinestatus.pim.PimClasses">PimClasses</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#nl.biopet.tools.pipelinestatus.pim.package@NodeextendsPimClasseswithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="nl.biopet.tools.pipelinestatus.pim.PimClasses" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="PimClassesextendsAnyRef"></a>
+      <a id="PimClasses:PimClasses"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="PimClasses.html"><span class="name">PimClasses</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#nl.biopet.tools.pipelinestatus.pim.package@PimClassesextendsAnyRef" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Created by pjvanthof on 17/03/2017.</p>
+    </li><li name="nl.biopet.tools.pipelinestatus.pim.Port" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="PortextendsPimClasseswithProductwithSerializable"></a>
+      <a id="Port:Port"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="Port.html"><span class="name">Port</span></a><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="description">description: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="title">title: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="dataType">dataType: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="customData">customData: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Any">Any</span>] = <span class="symbol">Map()</span></span>)</span><span class="result"> extends <a href="PimClasses.html" class="extype" name="nl.biopet.tools.pipelinestatus.pim.PimClasses">PimClasses</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#nl.biopet.tools.pipelinestatus.pim.package@PortextendsPimClasseswithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="nl.biopet.tools.pipelinestatus.pim.Run" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="RunextendsPimClasseswithProductwithSerializable"></a>
+      <a id="Run:Run"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="Run.html"><span class="name">Run</span></a><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="title">title: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="description">description: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="user">user: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="root">root: <a href="Node.html" class="extype" name="nl.biopet.tools.pipelinestatus.pim.Node">Node</a></span>, <span name="links">links: <span class="extype" name="scala.Array">Array</span>[<a href="Link.html" class="extype" name="nl.biopet.tools.pipelinestatus.pim.Link">Link</a>] = <span class="symbol">Array()</span></span>, <span name="statusTypes">statusTypes: <span class="extype" name="scala.Array">Array</span>[<a href="StatusType.html" class="extype" name="nl.biopet.tools.pipelinestatus.pim.StatusType">StatusType</a>] = <span class="symbol">Array()</span></span>, <span name="assignedTo">assignedTo: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">Array()</span></span>, <span name="customData">customData: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Any">Any</span>] = <span class="symbol">Map()</span></span>)</span><span class="result"> extends <a href="PimClasses.html" class="extype" name="nl.biopet.tools.pipelinestatus.pim.PimClasses">PimClasses</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#nl.biopet.tools.pipelinestatus.pim.package@RunextendsPimClasseswithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="nl.biopet.tools.pipelinestatus.pim.StatusType" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="StatusTypeextendsPimClasseswithProductwithSerializable"></a>
+      <a id="StatusType:StatusType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="StatusType.html"><span class="name">StatusType</span></a><span class="params">(<span name="description">description: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="title">title: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="color">color: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>)</span><span class="result"> extends <a href="PimClasses.html" class="extype" name="nl.biopet.tools.pipelinestatus.pim.PimClasses">PimClasses</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#nl.biopet.tools.pipelinestatus.pim.package@StatusTypeextendsPimClasseswithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li></ol>
+            </div>
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="nl.biopet.tools.pipelinestatus.pim.JobStatus" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="JobStatus"></a>
+      <a id="JobStatus:JobStatus"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="JobStatus$.html"><span class="name">JobStatus</span></a><span class="result"> extends <span class="extype" name="scala.Enumeration">Enumeration</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#nl.biopet.tools.pipelinestatus.pim.package@JobStatus" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>
