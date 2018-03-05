@@ -22,4 +22,4 @@ scalaVersion := "2.11.12"
 libraryDependencies += "com.github.biopet" %% "tool-utils" % "0.3.1"
 libraryDependencies += "com.typesafe.play" %% "play-ws" % "2.5.15"
 
-libraryDependencies += "com.github.biopet" %% "tool-test-utils" % "0.2.1" % Test
+libraryDependencies += "com.github.biopet" %% "tool-test-utils" % "0.2.2" % Test
